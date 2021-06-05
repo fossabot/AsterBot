@@ -12,8 +12,10 @@ import (
 )
 
 var config map[string]interface{}
+var maintainance_mode bool
 
 func main() {
+	maintainance_mode = false
 
 	//Read Configuration from file
 	config = GetConfig("./conf.json")

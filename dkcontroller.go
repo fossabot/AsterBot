@@ -12,12 +12,14 @@ func ContainerStatus(id string) bool {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		panic(err)
+		status = false
+		//panic(err)
 	}
 
 	containers, err := cli.ContainerList(ctx, types.ContainerListOptions{})
 	if err != nil {
-		panic(err)
+		status = false
+		//panic(err)
 	}
 
 	for _, container := range containers {
@@ -34,7 +36,8 @@ func ContainerStart(id string) bool {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		panic(err)
+		status = false
+		//panic(err)
 	}
 
 	err = cli.ContainerStart(ctx, id, types.ContainerStartOptions{})
@@ -51,7 +54,8 @@ func ContainerStop(id string) bool {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		panic(err)
+		status = false
+		//panic(err)
 	}
 
 	err = cli.ContainerStop(ctx, id, nil)
@@ -68,7 +72,8 @@ func ContainerRestart(id string) bool {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		panic(err)
+		status = false
+		//panic(err)
 	}
 
 	err = cli.ContainerRestart(ctx, id, nil)
