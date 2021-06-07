@@ -1,10 +1,5 @@
 package main //discord controller
 
-// fmt.Println(CheckStatus("5c8de1057d2d"))
-// fmt.Println(StartContainer("5c8de1057d2d"))
-// fmt.Println(StopContainer("5c8de1057d2d"))
-// fmt.Println(RestartContainer("5c8de1057d2d"))
-
 import (
 	"fmt"
 	"strings"
@@ -14,51 +9,126 @@ import (
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	content := strings.ToUpper(m.Content)
-	if strings.Contains(content, "ASTER") && (m.Author.ID != fmt.Sprintf("%v", config["bot_id"])) {
+	if Contain(content, "ASTER") && (m.Author.ID != fmt.Sprintf("%v", config["bot_id"])) {
 		for _, mod_id := range strings.Split(fmt.Sprintf("%v", config["mod"]), ", ") {
 			if m.Author.ID == mod_id {
-				if strings.Contains(content, "STOP") {
+
+				// Container Stop
+				if Contain(content, "STOP") {
 					ContainerStop(fmt.Sprintf("%v", config["container_id"]))
-					s.ChannelMessageSend(m.ChannelID, "Stopping Server 😔, \n"+m.Author.Mention())
+					Send(s, m, "Stopping Server 😔, \n")
 				}
-				if strings.Contains(content, "RESTART") {
+
+				// Container Restart
+				if Contain(content, "RESTART") {
 					ContainerRestart(fmt.Sprintf("%v", config["container_id"]))
-					s.ChannelMessageSend(m.ChannelID, "Restarting Server 😉, \n"+m.Author.Mention())
+					Send(s, m, "Restarting Server 😉, \n")
 				}
-				if strings.Contains(content, "MT") {
-					if strings.Contains(content, "ON") {
-						maintainance_mode = true
-						s.ChannelMessageSend(m.ChannelID, "Maintainance Mode On 👻, \n"+m.Author.Mention())
+
+				// Lock Mode
+				if Contain(content, "LOCK") {
+					if Contain(content, "ON") {
+						lock_mode = true
+						Send(s, m, "Lock Mode On 👻, \n")
 					}
-					if strings.Contains(content, "OFF") {
-						maintainance_mode = false
-						s.ChannelMessageSend(m.ChannelID, "Maintainance Mode Off 😗, \n"+m.Author.Mention())
+					if Contain(content, "OFF") {
+						lock_mode = false
+						Send(s, m, "Lock Mode Off 😗, \n")
+					}
+				}
+
+				// Whitelist list
+				if Contain(content, "WHITELIST") && Contain(content, " LIST") {
+					if ContainerExec(fmt.Sprintf("%v", config["container_id"]), "whitelist list") {
+						status, out := ContainerLog(fmt.Sprintf("%v", config["container_id"]), 0)
+						if status {
+							out = out[4 : len(out)-6]
+							Send(s, m, "Result:\n"+out)
+						}
+					}
+				}
+
+				// Whitelist Add
+				if name, check := GetName(m.Content); Contain(content, "WHITELIST") && Contain(content, " ADD") && check {
+					if ContainerExec(fmt.Sprintf("%v", config["container_id"]), "whitelist add "+name) {
+						status, out := ContainerLog(fmt.Sprintf("%v", config["container_id"]), 0)
+						if status {
+							Send(s, m, "Result:\n"+out)
+						}
+					}
+				}
+
+				// Whitelist Remove
+				if name, check := GetName(m.Content); Contain(content, "WHITELIST") && Contain(content, " REMOVE") && check {
+					if ContainerExec(fmt.Sprintf("%v", config["container_id"]), "whitelist remove "+name) {
+						status, out := ContainerLog(fmt.Sprintf("%v", config["container_id"]), 0)
+						if status {
+							Send(s, m, "Result:\n"+out)
+						}
 					}
 				}
 			}
 		}
 
-		if strings.Contains(content, "START") && !maintainance_mode {
+		// Container Start
+		if Contain(content, "START") && !lock_mode {
 			if ContainerStatus(fmt.Sprintf("%v", config["container_id"])) {
-				s.ChannelMessageSend(m.ChannelID, "Server is running already 👀, \n"+m.Author.Mention())
+				Send(s, m, "Server is running already 👀, \n")
 			} else {
 				if ContainerStart(fmt.Sprintf("%v", config["container_id"])) {
-					s.ChannelMessageSend(m.ChannelID, "Starting Server 😍, \n"+m.Author.Mention())
+					Send(s, m, "Starting Server 😍, \n")
 				}
 			}
 		}
 
-		if strings.Contains(content, "STATUS") && !maintainance_mode {
+		// Container Status
+		if Contain(content, "STATUS") && !lock_mode {
 			if ContainerStatus(fmt.Sprintf("%v", config["container_id"])) {
-				s.ChannelMessageSend(m.ChannelID, "Server is Up 😎, \n"+m.Author.Mention())
+				Send(s, m, "Server is Up 😎, \n")
 			} else {
-				s.ChannelMessageSend(m.ChannelID, "Server is Down 😓, \n"+m.Author.Mention())
-				m.Author.Mention()
+				Send(s, m, "Server is Down 😓, \n")
 			}
 		}
 
-		if strings.Contains(content, "ABOUT") {
-			s.ChannelMessageSend(m.ChannelID, "Server Status ကိုကြည့်နိုင်အောင် PeterZam ကရေးထားတာပါ။\nSource Code : https://github.com/peterzam/asterianbot\nAvaliable Commands:\n Start, Stop, Restart, MT, Status, About")
+		// About Bot
+		if Contain(content, "ABOUT") {
+			Send(s, m, "Server Status ကိုကြည့်နိုင်အောင် PeterZam ကရေးထားတာပါ။\nSource Code : https://github.com/peterzam/asterianbot\nAvaliable Commands:\n Start, Stop, Restart, MT, Status, About")
+		}
+
+		// List Player
+		if Contain(content, "LIST") && !Contain(content, "WHITELIST") {
+			if ContainerExec(fmt.Sprintf("%v", config["container_id"]), "list") {
+				status, out := ContainerLog(fmt.Sprintf("%v", config["container_id"]), 0)
+				if status {
+					Send(s, m, "Result:\n"+out)
+				}
+			}
+
 		}
 	}
+}
+
+// Shortened strings.Contains
+func Contain(content string, sub string) bool {
+	return strings.Contains(content, sub)
+}
+
+// Shortened s.ChannelMessageSend
+func Send(s *discordgo.Session, m *discordgo.MessageCreate, str string) {
+	s.ChannelMessageSend(m.ChannelID, str+m.Author.Mention())
+}
+
+// Get Name String between "[" and "]"
+func GetName(str string) (result string, found bool) {
+	s := strings.Index(str, "[")
+	if s == -1 {
+		return result, false
+	}
+	newS := str[s+len("["):]
+	e := strings.Index(newS, "]")
+	if e == -1 {
+		return result, false
+	}
+	result = newS[:e]
+	return result, true
 }
