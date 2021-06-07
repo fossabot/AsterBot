@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/tidwall/gjson"
 )
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -43,7 +44,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 						status, out := ContainerLog(fmt.Sprintf("%v", config["container_id"]), 0)
 						if status {
 							out = out[4 : len(out)-6]
-							Send(s, m, "Result:\n"+out)
+							Send(s, m, "Result:\n"+GetWhitelist(out))
 						}
 					}
 				}
@@ -131,4 +132,11 @@ func GetName(str string) (result string, found bool) {
 	}
 	result = newS[:e]
 	return result, true
+}
+
+func GetWhitelist(str string) string {
+	value := gjson.Get(str, "result.#.name")
+	result := strings.ReplaceAll(value.String(), ",", ",\n")
+	result = result[1:len(result)-1] + "\n"
+	return result
 }
