@@ -82,7 +82,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		// Container Status
-		if Contain(content, "STATUS") && !lock_mode {
+		if Contain(content, "STATUS") {
 			if ContainerStatus(fmt.Sprintf("%v", config["container_id"])) {
 				Send(s, m, "Server is Up 😎, \n")
 			} else {
