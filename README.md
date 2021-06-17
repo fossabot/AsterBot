@@ -4,6 +4,10 @@
 
 <hr>
 
+
+[![.github/workflows/go.yml](https://github.com/peterzam/AsterianBot/actions/workflows/go.yml/badge.svg)](https://github.com/peterzam/AsterianBot/actions/workflows/go.yml)
+
+
 Discord Bot Functions
  - container status
  - container start
