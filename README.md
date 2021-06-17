@@ -9,18 +9,19 @@
 
 
 Discord Bot Functions
- - container status
- - container start
- - *container stop
- - *container restart
- - *lockmode on/off
- - *add whitelist
- - *remove whitelist
- - *list whitelist
- - list player
- - about
-
-"*" Mods only commands.Other public commands can be on/off by lockmode.
+```
+ "aster status"                        - container status
+ "aster start"                         - container start
+ "aster stop"                          - container stop*
+ "aster restart"                       - container restart*
+ "aster lockmode on/off"               - lockmode on/off*
+ "aster add whitelist [<username>]"    - add whitelist*
+ "aster remove whitelist [<username>]" - remove whitelist*
+ "aster list whitelist"                - list whitelist*
+ "aster list"                          - list player
+ "aster about"                         - about
+```
+\* Mods only commands.Other public commands can be on/off by lockmode.
 
 conf.json
 
