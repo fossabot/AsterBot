@@ -25,7 +25,7 @@ Discord Bot Functions
 
 conf.json
 
-```
+```json
 {
      "mod" : "<discord id>",
      "token" : "<discord bot token>",
