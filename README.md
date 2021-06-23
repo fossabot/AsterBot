@@ -6,6 +6,7 @@
 
 
 [![.github/workflows/go.yml](https://github.com/peterzam/AsterianBot/actions/workflows/go.yml/badge.svg)](https://github.com/peterzam/AsterianBot/actions/workflows/go.yml)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fpeterzam%2FAsterBot.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fpeterzam%2FAsterBot?ref=badge_shield)
 
 
 Discord Bot Functions
@@ -33,3 +34,7 @@ conf.json
      "bot_id" : "<discord bot id>"
 }
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fpeterzam%2FAsterBot.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fpeterzam%2FAsterBot?ref=badge_large)
